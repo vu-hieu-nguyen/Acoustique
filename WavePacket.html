@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=desmos"></script>
+<style>
+  html, body { margin: 0; height: 100%; }
+  #calculator { width: 100%; height: 100vh; }
+</style>
+</head>
+<body>
+
+<div id="calculator"></div>
+
+<script>
+var elt = document.getElementById('calculator');
+var calculator = Desmos.GraphingCalculator(elt, {
+  expressions: true,
+  settingsMenu: false,
+  zoomButtons: true
+});
+
+calculator.setExpressions([
+
+  // Parameters
+  {id:'A', latex:'A=1'},
+  {id:'k_1', latex:'k_1=5'},
+  {id:'k_2', latex:'k_2=5.3'},
+  {id:'\\omega_1', latex:'\\omega_1=5'},
+  {id:'\\omega_2', latex:'\\omega_2=5.2'},
+  {id:'t', latex:'t=0'},
+
+  // Individual waves
+  {id:'u1', latex:'u_1(x)=A\\cos(k_1 x - \\omega_1 t)', color:'#2d70b3'},
+  {id:'u2', latex:'u_2(x)=A\\cos(k_2 x - \\omega_2 t)', color:'#b32d2d'},
+
+  // Superposition
+  {id:'sum', latex:'u(x)=u_1(x)+u_2(x)', color:'#2d8f4e'},
+
+  // Envelope (beats)
+  {id:'env1', latex:'2A\\cos((k_1-k_2)x/2 - (\\omega_1-\\omega_2)t/2)', 
+   lineStyle: Desmos.Styles.DASHED, color:'#000000'}
+]);
+
+</script>
+
+</body>
+</html>
