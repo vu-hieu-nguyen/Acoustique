@@ -16,7 +16,6 @@
 var elt = document.getElementById('calculator');
 var calculator = Desmos.GraphingCalculator(elt, {
   expressions: true,
-  settingsMenu: false,
   zoomButtons: true
 });
 
@@ -28,7 +27,9 @@ calculator.setExpressions([
   {id:'k_2', latex:'k_2=5.3'},
   {id:'\\omega_1', latex:'\\omega_1=5'},
   {id:'\\omega_2', latex:'\\omega_2=5.2'},
-  {id:'t', latex:'t=0'},
+
+  // Time slider with bounds
+  {id:'t', latex:'t=0', sliderBounds:{min:0, max:20}},
 
   // Individual waves
   {id:'u1', latex:'u_1(x)=A\\cos(k_1 x - \\omega_1 t)', color:'#2d70b3'},
@@ -37,9 +38,17 @@ calculator.setExpressions([
   // Superposition
   {id:'sum', latex:'u(x)=u_1(x)+u_2(x)', color:'#2d8f4e'},
 
-  // Envelope (beats)
-  {id:'env1', latex:'2A\\cos((k_1-k_2)x/2 - (\\omega_1-\\omega_2)t/2)', 
-   lineStyle: Desmos.Styles.DASHED, color:'#000000'}
+  // Envelope (upper)
+  {id:'env1', 
+   latex:'env(x)=2A\\cos((k_1-k_2)x/2 - (\\omega_1-\\omega_2)t/2)',
+   lineStyle:'dashed',
+   color:'#000000'},
+
+  // Envelope (lower)
+  {id:'env2', 
+   latex:'-env(x)',
+   lineStyle:'dashed',
+   color:'#000000'}
 ]);
 
 </script>
