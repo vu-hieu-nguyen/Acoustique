@@ -239,6 +239,15 @@ function animate(){
     "white"
   );
 
+  // Enveloppe
+  drawWave(ctx2,c2,
+    x=>2*A*Math.cos(0.5*(dk*x-dw*time)),
+    "#ff4444",70);
+
+  drawWave(ctx2,c2,
+    x=>-2*A*Math.cos(0.5*(dk*x-dw*time)),
+    "#ff4444",70);
+
   requestAnimationFrame(animate);
 }
 
@@ -247,3 +256,4 @@ animate();
 </script>
 </body>
 </html>
+
