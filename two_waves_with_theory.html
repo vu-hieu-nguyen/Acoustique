@@ -189,6 +189,9 @@ let time = 0;
 const baseDt = 0.0021;
 
 function drawWave(ctx,canvas,func,color,scale=50){
+
+  drawGridAndAxes(ctx, canvas);
+
   ctx.strokeStyle=color;
   ctx.lineWidth=2;
   ctx.beginPath();
@@ -199,6 +202,51 @@ function drawWave(ctx,canvas,func,color,scale=50){
     else ctx.lineTo(px,y);
   }
   ctx.stroke();
+}
+
+function drawGridAndAxes(ctx, canvas){
+
+  ctx.strokeStyle = "#222";
+  ctx.lineWidth = 1;
+
+  // Vertical grid
+  for(let x=0; x<canvas.width; x+=50){
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,canvas.height);
+    ctx.stroke();
+  }
+
+  // Horizontal grid
+  for(let y=0; y<canvas.height; y+=40){
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(canvas.width,y);
+    ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = "#00ffee";
+  ctx.lineWidth = 2;
+
+  // x-axis
+  ctx.beginPath();
+  ctx.moveTo(0,canvas.height/2);
+  ctx.lineTo(canvas.width,canvas.height/2);
+  ctx.stroke();
+
+  // y-axis
+  ctx.beginPath();
+  ctx.moveTo(50,0);
+  ctx.lineTo(50,canvas.height);
+  ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = "#00ffee";
+  ctx.font = "16px Consolas";
+
+  ctx.fillText("x", canvas.width-20, canvas.height/2 - 8);
+  ctx.fillText("ψ(x,t)", 8, 20);
 }
 
 function drawArrow(ctx,x,y,length,color,label){
@@ -298,5 +346,6 @@ animate();
 </script>
 </body>
 </html>
+
 
 
