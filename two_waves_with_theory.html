@@ -254,21 +254,28 @@ function drawGridAndAxes(ctx, canvas){
   ctx.fillText("ψ(x,t)", 8, 20);
 }
 
-function drawWave(ctx,canvas,func,color,scale=50){
+function drawWave(ctx, canvas, func, color, scale=60){
 
   drawGridAndAxes(ctx, canvas);
 
-  ctx.strokeStyle=color;
-  ctx.lineWidth=2;
   ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+
   for(let px=0; px<canvas.width; px++){
-    let x = px/100;
-    let y = canvas.height/2 - scale*func(x);
-    if(px===0) ctx.moveTo(px,y);
-    else ctx.lineTo(px,y);
+
+    let x = (px-50)/50;
+    let y = func(x);
+
+    let py = canvas.height/2 - y*scale;
+
+    if(px===0) ctx.moveTo(px,py);
+    else ctx.lineTo(px,py);
   }
+
   ctx.stroke();
 }
+	
 function drawArrow(ctx,x,y,length,color,label){
   ctx.strokeStyle=color;
   ctx.fillStyle=color;
@@ -366,6 +373,7 @@ animate();
 </script>
 </body>
 </html>
+
 
 
 
