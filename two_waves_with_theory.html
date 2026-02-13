@@ -220,6 +220,12 @@ function animate(){
   w2Val.textContent = w2.toFixed(0);
   speedVal.textContent = speed.toFixed(1);
 
+  let dk = k2-k1;
+  let dw = w2-w1;
+
+  let vp = wAvg/kAvg;
+  let vg = Math.abs(dk)>0.0001 ? dw/dk : 0;
+
   t += 0.002 * speed;
 
   // Individual waves
@@ -242,11 +248,11 @@ function animate(){
 
   // Enveloppe
   drawWave(ctx2,canvas2,
-    x=>2*A*Math.cos(0.5*(dk*x-dw*time)),
+    x=>2*A*Math.cos(0.5*(dk*x-dw*t)),
     "#ff4444",70);
 
   drawWave(ctx2,canvas2,
-    x=>-2*A*Math.cos(0.5*(dk*x-dw*time)),
+    x=>-2*A*Math.cos(0.5*(dk*x-dw*t)),
     "#ff4444",70);
 
   requestAnimationFrame(animate);
@@ -257,6 +263,7 @@ animate();
 </script>
 </body>
 </html>
+
 
 
 
