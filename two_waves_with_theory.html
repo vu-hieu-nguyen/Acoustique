@@ -1,233 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Phase and Group Velocity</title>
+<meta charset="UTF-8">
+<title>Wave Packet – Phase & Group Velocity</title>
 
-<!-- MathJax -->
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <style>
 body{
-  margin:0;
-  background:#0a0f1a;
+  background:#000;
   color:#00ffee;
-  font-family:"Georgia", serif;
+  font-family:Consolas;
   text-align:center;
 }
 
-h2{ margin:15px; }
-
-.controls{
-  padding:12px;
+canvas{
   background:#111;
-  border-top:2px solid #00ffee;
-  border-bottom:2px solid #00ffee;
+  display:block;
+  margin:10px auto;
+  border:1px solid #00ffee;
 }
 
-label{
-  margin:8px 12px;
-  display:inline-block;
+table{
+  margin:auto;
+  border-spacing:15px 8px;
 }
-
-input[type=range]{ width:140px; }
 
 .value{
+  min-width:50px;
   display:inline-block;
-  min-width:65px;
-  padding:3px 6px;
-  margin-left:4px;
-  border:1px solid #00ffee;
-  background:#000;
-}
-
-canvas{
-  background:#000;
-  border:1px solid #222;
-  margin:10px;
-}
-
-.theory{
-  max-width:1000px;
-  margin:40px auto;
-  padding:20px;
-  text-align:left;
-  background:#111;
-  border:1px solid #00ffee;
+  text-align:right;
 }
 </style>
 </head>
-
 <body>
 
-<h2>Superposition of Two Close Plane Waves</h2>
+<h2>Wave Superposition – Phase and Group Velocity</h2>
+
+<!-- ================= CONTROLS ================= -->
 
 <div class="controls">
 
-<label>
-A 
-<input type="range" id="A" min="0.5" max="2" step="0.1" value="1">
-<span class="value" id="AVal">1.0</span>
-</label>
+<table>
+<tr><td>A</td>
+<td><input type="range" id="A" min="0.5" max="2" step="0.1" value="1"></td>
+<td><span class="value" id="AVal"></span></td><td></td></tr>
+
+<tr><td>k₁</td>
+<td><input type="range" id="k1" min="15" max="25" step="0.1" value="20"></td>
+<td><span class="value" id="k1Val"></span></td><td>rad/m</td></tr>
+
+<tr><td>k₂</td>
+<td><input type="range" id="k2" min="15" max="25" step="0.1" value="21"></td>
+<td><span class="value" id="k2Val"></span></td><td>rad/m</td></tr>
+
+<tr><td>ω₁</td>
+<td><input type="range" id="w1" min="80" max="120" step="1" value="100"></td>
+<td><span class="value" id="w1Val"></span></td><td>rad/s</td></tr>
+
+<tr><td>ω₂</td>
+<td><input type="range" id="w2" min="80" max="120" step="1" value="105"></td>
+<td><span class="value" id="w2Val"></span></td><td>rad/s</td></tr>
+
+<tr><td>Speed</td>
+<td><input type="range" id="speed" min="0" max="3" step="0.1" value="1"></td>
+<td><span class="value" id="speedVal"></span></td><td>×</td></tr>
+</table>
+
+<br>
 
 <label>
-k₁ 
-<input type="range" id="k1" min="15" max="25" step="0.1" value="20">
-<span class="value" id="k1Val">20.0</span>
+<input type="checkbox" id="gridToggle" checked>
+ Show Grid
 </label>
 
-<label>
-k₂ 
-<input type="range" id="k2" min="15" max="25" step="0.1" value="21">
-<span class="value" id="k2Val">21.0</span>
-</label>
+<br><br>
 
-<label>
-ω₁ 
-<input type="range" id="w1" min="80" max="120" step="1" value="100">
-<span class="value" id="w1Val">100</span>
-</label>
-
-<label>
-ω₂ 
-<input type="range" id="w2" min="80" max="120" step="1" value="105">
-<span class="value" id="w2Val">105</span>
-</label>
-
-<label>
-Speed 
-<input type="range" id="speed" min="0" max="3" step="0.1" value="1">
-<span class="value" id="speedVal">1.0</span>
-</label>
+<button onclick="resetSliders()">Reset</button>
 
 </div>
 
+<!-- ================= CANVASES ================= -->
+
+<h3>Original Waves</h3>
 <canvas id="canvas1" width="1000" height="220"></canvas>
-<canvas id="canvas2" width="1000" height="360"></canvas>
-<div style="
-width:500px;
-margin:15px auto;
-padding:10px;
-border:1px solid #00ffee;
-background:#111;
-text-align:left;
-">
 
-<b>Legend</b><br><br>
-
-<span style="color:#39ff14;">■ Green</span> : Wave 1 \( A\cos(k_1 x - \omega_1 t) \)<br>
-<span style="color:#ff00ff;">■ Magenta</span> : Wave 2 \( A\cos(k_2 x - \omega_2 t) \)<br>
-<span style="color:white;">■ White</span> : Superposition \( \psi(x,t) \)<br>
-<span style="color:#ff4444;">■ Red</span> : Envelope \( 2A\cos\left(\frac{\Delta k x - \Delta \omega t}{2}\right) \)<br>
-<span style="color:yellow;">■ Yellow Arrow</span> : Phase velocity \( v_p \)<br>
-<span style="color:red;">■ Red Arrow</span> : Group velocity \( v_g \)
-
-</div>
-
-
-<!-- Live LaTeX display -->
-<div id="liveMath" style="margin-top:20px; font-size:18px;"></div>
-
-<!-- Theoretical Section -->
-<div class="theory">
-
-<h3> Theoretical Background</h3>
-
-<p>
-We consider the superposition of two harmonic plane waves:
-</p>
-
-\[
-\psi_1 = A \cos(k_1 x - \omega_1 t)
-\]
-
-\[
-\psi_2 = A \cos(k_2 x - \omega_2 t)
-\]
-
-<p>
-Using the trigonometric identity:
-</p>
-
-\[
-\cos a + \cos b =
-2 \cos\left(\frac{a-b}{2}\right)
-\cos\left(\frac{a+b}{2}\right)
-\]
-
-<p>
-The total wave becomes:
-</p>
-
-\[
-\psi(x,t) =
-2A
-\cos\left(
-\frac{\Delta k}{2} x -
-\frac{\Delta \omega}{2} t
-\right)
-\cos\left(
-k_{avg} x -
-\omega_{avg} t
-\right)
-\]
-
-<p>
-The fast oscillation (carrier) moves at the <b>phase velocity</b>:
-</p>
-
-\[
-v_p = \frac{\omega_{avg}}{k_{avg}}
-\]
-
-<p>
-The envelope propagates at the <b>group velocity</b>:
-</p>
-
-\[
-v_g = \frac{\Delta \omega}{\Delta k}
-\]
-
-<p>
-In a dispersive medium:
-</p>
-
-\[
-v_g = \frac{d\omega}{dk}
-\]
-
-</div>
+<h3>Superposition and Envelope</h3>
+<canvas id="canvas2" width="1000" height="260"></canvas>
 
 <script>
 
-const c1 = document.getElementById("canvas1");
-const c2 = document.getElementById("canvas2");
-const ctx1 = c1.getContext("2d");
-const ctx2 = c2.getContext("2d");
+// ================== CONTEXT ==================
 
-let time = 0;
-const baseDt = 0.0021;
+const canvas1 = document.getElementById("canvas1");
+const ctx1 = canvas1.getContext("2d");
 
+const canvas2 = document.getElementById("canvas2");
+const ctx2 = canvas2.getContext("2d");
 
-function drawGridAndAxes(ctx, canvas){
+// ================== SCALE ==================
 
-  ctx.strokeStyle = "#f3f5ed";
-  ctx.lineWidth = 0.5;
+const originX = 60;
+const scaleX = 50;
+const scaleY = 60;
 
-  // Vertical grid
-  for(let x=0; x<canvas.width; x+=50){
-    ctx.beginPath();
-    ctx.moveTo(x,0);
-    ctx.lineTo(x,canvas.height);
-    ctx.stroke();
-  }
+// ================== DRAW GRID + AXES ==================
 
-  // Horizontal grid
-  for(let y=0; y<canvas.height; y+=40){
-    ctx.beginPath();
-    ctx.moveTo(0,y);
-    ctx.lineTo(canvas.width,y);
-    ctx.stroke();
+function drawAxes(ctx, canvas){
+
+  const showGrid = document.getElementById("gridToggle").checked;
+
+  if(showGrid){
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 1;
+
+    // vertical grid
+    for(let x=originX; x<canvas.width; x+=scaleX){
+      ctx.beginPath();
+      ctx.moveTo(x,0);
+      ctx.lineTo(x,canvas.height);
+      ctx.stroke();
+    }
+
+    // horizontal grid
+    for(let y=0; y<canvas.height; y+=40){
+      ctx.beginPath();
+      ctx.moveTo(0,y);
+      ctx.lineTo(canvas.width,y);
+      ctx.stroke();
+    }
   }
 
   // Axes
@@ -242,21 +143,31 @@ function drawGridAndAxes(ctx, canvas){
 
   // y-axis
   ctx.beginPath();
-  ctx.moveTo(50,0);
-  ctx.lineTo(50,canvas.height);
+  ctx.moveTo(originX,0);
+  ctx.lineTo(originX,canvas.height);
   ctx.stroke();
 
   // Axis labels
   ctx.fillStyle = "#00ffee";
-  ctx.font = "16px Consolas";
+  ctx.font = "14px Consolas";
 
   ctx.fillText("x", canvas.width-20, canvas.height/2 - 8);
-  ctx.fillText("ψ(x,t)", 8, 20);
+  ctx.fillText("ψ(x,t)", 5, 20);
+
+  // Numeric x-ticks
+  for(let x=originX; x<canvas.width; x+=scaleX){
+    let value = ((x-originX)/scaleX).toFixed(0);
+    ctx.fillText(value, x-5, canvas.height/2 + 18);
+  }
 }
 
-function drawWave(ctx, canvas, func, color, scale=60){
+// ================== DRAW FUNCTION ==================
 
-  drawGridAndAxes(ctx, canvas);
+function drawWave(ctx, canvas, func, color){
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  drawAxes(ctx,canvas);
 
   ctx.beginPath();
   ctx.strokeStyle = color;
@@ -264,10 +175,10 @@ function drawWave(ctx, canvas, func, color, scale=60){
 
   for(let px=0; px<canvas.width; px++){
 
-    let x = (px-50)/50;
+    let x = (px-originX)/scaleX;
     let y = func(x);
 
-    let py = canvas.height/2 - y*scale;
+    let py = canvas.height/2 - y*scaleY;
 
     if(px===0) ctx.moveTo(px,py);
     else ctx.lineTo(px,py);
@@ -275,108 +186,64 @@ function drawWave(ctx, canvas, func, color, scale=60){
 
   ctx.stroke();
 }
-	
-function drawArrow(ctx,x,y,length,color,label){
-  ctx.strokeStyle=color;
-  ctx.fillStyle=color;
-  ctx.lineWidth=3;
 
-  ctx.beginPath();
-  ctx.moveTo(x,y);
-  ctx.lineTo(x+length,y);
-  ctx.stroke();
+// ================== RESET ==================
 
-  ctx.beginPath();
-  if(length>=0){
-    ctx.moveTo(x+length,y);
-    ctx.lineTo(x+length-10,y-6);
-    ctx.lineTo(x+length-10,y+6);
-  } else {
-    ctx.moveTo(x+length,y);
-    ctx.lineTo(x+length+10,y-6);
-    ctx.lineTo(x+length+10,y+6);
-  }
-  ctx.closePath();
-  ctx.fill();
-  
-  if(length >= 0)
-    ctx.fillText(label,x+length+8,y+4);
-  else
-    ctx.fillText(label,x+length-40,y+4);
+function resetSliders(){
+  A.value=1;
+  k1.value=20;
+  k2.value=21;
+  w1.value=100;
+  w2.value=105;
+  speed.value=1;
 }
+
+// ================== ANIMATION ==================
+
+let t = 0;
 
 function animate(){
 
-  let speed = parseFloat(speed_slider.value);
-  time += baseDt * speed;
+  const A = parseFloat(document.getElementById("A").value);
+  const k1 = parseFloat(document.getElementById("k1").value);
+  const k2 = parseFloat(document.getElementById("k2").value);
+  const w1 = parseFloat(document.getElementById("w1").value);
+  const w2 = parseFloat(document.getElementById("w2").value);
+  const speed = parseFloat(document.getElementById("speed").value);
 
-  let A  = parseFloat(A_slider.value);
-  let k1 = parseFloat(k1_slider.value);
-  let k2 = parseFloat(k2_slider.value);
-  let w1 = parseFloat(w1_slider.value);
-  let w2 = parseFloat(w2_slider.value);
+  // Update values
+  AVal.textContent = A.toFixed(1);
+  k1Val.textContent = k1.toFixed(1);
+  k2Val.textContent = k2.toFixed(1);
+  w1Val.textContent = w1.toFixed(0);
+  w2Val.textContent = w2.toFixed(0);
+  speedVal.textContent = speed.toFixed(1);
 
-  // ---- Update displayed values beside sliders ----
-  document.getElementById("AVal").textContent = A.toFixed(1);
-  document.getElementById("k1Val").textContent = k1.toFixed(1);
-  document.getElementById("k2Val").textContent = k2.toFixed(1);
-  document.getElementById("w1Val").textContent = w1.toFixed(0);
-  document.getElementById("w2Val").textContent = w2.toFixed(0);
-  document.getElementById("speedVal").textContent = speed.toFixed(1);
+  t += 0.02 * speed;
 
-  let kAvg = (k1+k2)/2;
-  let wAvg = (w1+w2)/2;
+  // Individual waves
+  drawWave(ctx1,canvas1,
+    x => A*Math.cos(k1*x - w1*t),
+    "#39ff14"
+  );
 
-  let dk = k2-k1;
-  let dw = w2-w1;
+  drawWave(ctx1,canvas1,
+    x => A*Math.cos(k2*x - w2*t),
+    "#ff00ff"
+  );
 
-  let vp = wAvg/kAvg;
-  let vg = Math.abs(dk)>0.0001 ? dw/dk : 0;
-
-  ctx1.clearRect(0,0,c1.width,c1.height);
-  ctx2.clearRect(0,0,c2.width,c2.height);
-
-  drawWave(ctx1,c1,x=>A*Math.cos(k1*x-w1*time),"#39ff14");
-  drawWave(ctx1,c1,x=>A*Math.cos(k2*x-w2*time),"#ff00ff");
-
-  drawWave(ctx2,c2,
-    x=>A*Math.cos(k1*x-w1*time)+A*Math.cos(k2*x-w2*time),
-    "#ffffff",70);
-
-  drawWave(ctx2,c2,
-    x=>2*A*Math.cos(0.5*(dk*x-dw*time)),
-    "#ff4444",70);
-
-  drawWave(ctx2,c2,
-    x=>-2*A*Math.cos(0.5*(dk*x-dw*time)),
-    "#ff4444",70);
-	
-  drawArrow(ctx2,100,40,vp*10,"white","Vp");
-  drawArrow(ctx2,100,70,vg*10,"red","Vg");
-
-  ctx2.fillStyle="#00ffee";
-  ctx2.fillText("v_p = "+vp.toFixed(3),850,40);
-  ctx2.fillText("v_g = "+vg.toFixed(3),850,65);
+  // Superposition
+  drawWave(ctx2,canvas2,
+    x => A*Math.cos(k1*x - w1*t) +
+         A*Math.cos(k2*x - w2*t),
+    "white"
+  );
 
   requestAnimationFrame(animate);
 }
-
-const A_slider=document.getElementById("A");
-const k1_slider=document.getElementById("k1");
-const k2_slider=document.getElementById("k2");
-const w1_slider=document.getElementById("w1");
-const w2_slider=document.getElementById("w2");
-const speed_slider=document.getElementById("speed");
 
 animate();
 
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
