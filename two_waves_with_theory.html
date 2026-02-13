@@ -220,7 +220,7 @@ function animate(){
   w2Val.textContent = w2.toFixed(0);
   speedVal.textContent = speed.toFixed(1);
 
-  t += baseDt * speed;
+  t += 0.02 * speed;
 
   // Individual waves
   drawWave(ctx1,canvas1,
@@ -257,6 +257,7 @@ animate();
 </script>
 </body>
 </html>
+
 
 
 
