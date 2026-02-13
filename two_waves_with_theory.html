@@ -104,6 +104,26 @@ Speed
 
 <canvas id="canvas1" width="1000" height="220"></canvas>
 <canvas id="canvas2" width="1000" height="360"></canvas>
+<div style="
+width:500px;
+margin:15px auto;
+padding:10px;
+border:1px solid #00ffee;
+background:#111;
+text-align:left;
+">
+
+<b>Legend</b><br><br>
+
+<span style="color:#39ff14;">■ Green</span> : Wave 1 \( A\cos(k_1 x - \omega_1 t) \)<br>
+<span style="color:#ff00ff;">■ Magenta</span> : Wave 2 \( A\cos(k_2 x - \omega_2 t) \)<br>
+<span style="color:white;">■ White</span> : Superposition \( \psi(x,t) \)<br>
+<span style="color:#ff4444;">■ Red</span> : Envelope \( 2A\cos\left(\frac{\Delta k x - \Delta \omega t}{2}\right) \)<br>
+<span style="color:yellow;">■ Yellow Arrow</span> : Phase velocity \( v_p \)<br>
+<span style="color:red;">■ Red Arrow</span> : Group velocity \( v_g \)
+
+</div>
+
 
 <!-- Live LaTeX display -->
 <div id="liveMath" style="margin-top:20px; font-size:18px;"></div>
@@ -188,21 +208,6 @@ const ctx2 = c2.getContext("2d");
 let time = 0;
 const baseDt = 0.0021;
 
-function drawWave(ctx,canvas,func,color,scale=50){
-
-  drawGridAndAxes(ctx, canvas);
-
-  ctx.strokeStyle=color;
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  for(let px=0; px<canvas.width; px++){
-    let x = px/100;
-    let y = canvas.height/2 - scale*func(x);
-    if(px===0) ctx.moveTo(px,y);
-    else ctx.lineTo(px,y);
-  }
-  ctx.stroke();
-}
 
 function drawGridAndAxes(ctx, canvas){
 
@@ -249,6 +254,21 @@ function drawGridAndAxes(ctx, canvas){
   ctx.fillText("ψ(x,t)", 8, 20);
 }
 
+function drawWave(ctx,canvas,func,color,scale=50){
+
+  drawGridAndAxes(ctx, canvas);
+
+  ctx.strokeStyle=color;
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let px=0; px<canvas.width; px++){
+    let x = px/100;
+    let y = canvas.height/2 - scale*func(x);
+    if(px===0) ctx.moveTo(px,y);
+    else ctx.lineTo(px,y);
+  }
+  ctx.stroke();
+}
 function drawArrow(ctx,x,y,length,color,label){
   ctx.strokeStyle=color;
   ctx.fillStyle=color;
@@ -346,6 +366,7 @@ animate();
 </script>
 </body>
 </html>
+
 
 
 
