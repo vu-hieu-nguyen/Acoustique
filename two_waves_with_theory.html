@@ -1,271 +1,353 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<title>Wave Packet – Phase & Group Velocity</title>
+    <meta charset="UTF-8">
+    <title>Wave Packet – Phase & Group Velocity</title>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js">
+</script>
 
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            background: #000;
+            color: #d3f3f1;
+            font-family: Consolas;
+            text-align: center;
+        }
 
-<style>
-body{
-  background:#000;
-  color:#00ffee;
-  font-family:Consolas;
-  text-align:center;
-}
+        canvas {
+            background: #111;
+            display: block;
+            margin: 10px auto;
+            border: 1px solid #00ffee;
+        }
 
-canvas{
-  background:#111;
-  display:block;
-  margin:10px auto;
-  border:1px solid #00ffee;
-}
+        table {
+            margin: auto;
+            border-spacing: 15px 8px;
+        }
 
-table{
-  margin:auto;
-  border-spacing:15px 8px;
-}
-
-.value{
-  min-width:50px;
-  display:inline-block;
-  text-align:right;
-}
-</style>
+        .value {
+            min-width: 50px;
+            display: inline-block;
+            text-align: right;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Wave Superposition – Phase and Group Velocity</h2>
+    <h2>Wave Packet – Phase & Group Velocity</h2>
 
-<!-- ================= CONTROLS ================= -->
+    <table>
+        <tr>
+            <td>A</td>
+            <td><input type="range" id="A" min="0.5" max="2" step="0.1" value="1"></td>
+            <td><span class="value" id="AVal"></span></td>
+        </tr>
 
-<div class="controls">
+        <tr>
+            <td>k₁</td>
+            <td><input type="range" id="k1" min="15" max="25" step="0.1" value="20"></td>
+            <td><span class="value" id="k1Val"></span></td>
+        </tr>
 
-<table>
-<tr><td>A</td>
-<td><input type="range" id="A" min="0.5" max="2" step="0.1" value="1"></td>
-<td><span class="value" id="AVal"></span></td><td></td></tr>
+        <tr>
+            <td>k₂</td>
+            <td><input type="range" id="k2" min="15" max="25" step="0.1" value="21"></td>
+            <td><span class="value" id="k2Val"></span></td>
+        </tr>
 
-<tr><td>k₁</td>
-<td><input type="range" id="k1" min="15" max="25" step="0.1" value="20"></td>
-<td><span class="value" id="k1Val"></span></td><td>rad/m</td></tr>
+        <tr>
+            <td>ω₁</td>
+            <td><input type="range" id="w1" min="80" max="120" step="1" value="100"></td>
+            <td><span class="value" id="w1Val"></span></td>
+        </tr>
 
-<tr><td>k₂</td>
-<td><input type="range" id="k2" min="15" max="25" step="0.1" value="21"></td>
-<td><span class="value" id="k2Val"></span></td><td>rad/m</td></tr>
+        <tr>
+            <td>ω₂</td>
+            <td><input type="range" id="w2" min="80" max="120" step="1" value="105"></td>
+            <td><span class="value" id="w2Val"></span></td>
+        </tr>
 
-<tr><td>ω₁</td>
-<td><input type="range" id="w1" min="80" max="120" step="1" value="100"></td>
-<td><span class="value" id="w1Val"></span></td><td>rad/s</td></tr>
+        <tr>
+            <td>Speed</td>
+            <td><input type="range" id="speed" min="0" max="3" step="0.1" value="1"></td>
+            <td><span class="value" id="speedVal"></span></td>
+        </tr>
+    </table>
 
-<tr><td>ω₂</td>
-<td><input type="range" id="w2" min="80" max="120" step="1" value="105"></td>
-<td><span class="value" id="w2Val"></span></td><td>rad/s</td></tr>
+    <br>
 
-<tr><td>Speed</td>
-<td><input type="range" id="speed" min="0" max="3" step="0.1" value="1"></td>
-<td><span class="value" id="speedVal"></span></td><td>×</td></tr>
-</table>
+    <label>
+        <input type="checkbox" id="gridToggle" checked>
+        Show Grid
+    </label>
 
-<br>
+    <br><br>
 
-<label>
-<input type="checkbox" id="gridToggle" checked>
- Show Grid
-</label>
+    <button onclick="resetSliders()">Reset</button>
 
-<br><br>
+    <h3>Original Waves</h3>
+    <h4><p>\({\color{#39ff14}\phi_1(x,t)}, {\color{#ff00ff} \phi_2(x,t)}\) </p></h4>
+    <canvas id="canvas1" width="1000" height="220"></canvas>
 
-<button onclick="resetSliders()">Reset</button>
+    <h3>Superposition and Envelope</h3>
+    <h4><p>\({\color{white}\phi(x,t)}, {\color{red} \phi_{env}(x,t)}\) </p></h4>
+    <canvas id="canvas2" width="1000" height="260"></canvas>
 
-</div>
+    <!-- Live LaTeX display -->
+    <div id="liveMath" style="margin-top:20px; font-size:18px;"></div>
+    
+    <!-- Theoretical Section -->
+    <div class="theory">
+    
+        <h3>📘 Theoretical Background</h3>
+    
+        <p>
+            We consider the superposition of two harmonic plane waves:
+        </p>
+    
+        \[
+        \phi_1(x,t) = A \cos(k_1 x - \omega_1 t)
+        \]
+    
+        \[
+        \phi_2(x,t) = A \cos(k_2 x - \omega_2 t)
+        \]
+       
+        <p>
+            The total wave becomes:
+        </p>
+    
+        \[
+        \phi(x,t) = \phi_1 + \phi_2 =
+        2A
+        \cos\left(
+        \frac{\Delta k}{2} x -
+        \frac{\Delta \omega}{2} t
+        \right)
+        \cos\left(
+        k_{avg} x -
+        \omega_{avg} t
+        \right)
+        \]
+        where : \(\Delta k = k_2 - k_1\), \(\Delta \omega = \omega_2 - \omega_1\),
+                \(k_{avg} = \frac{k_1 + k_2}{2}\),  \(\omega_{avg} = \frac{\omega_1 + \omega_2}{2}\)
+         
+        <p>
+            The fast oscillation (carrier) moves at the <b>phase velocity</b>:
+        </p>
+    
+        \[
+        v_p = \frac{\omega_{avg}}{k_{avg}}
+        \]
+    
+        <p>
+            The envelope propagates at the <b>group velocity</b>:
+        </p>
+    
+        \[
+        v_g = \frac{\Delta \omega}{\Delta k}
+        \]
+    
+        <p>
+            In a dispersive medium:
+        </p>
+    
+        \[
+        v_g = \frac{d\omega}{dk}
+        \]
+    
+    </div>
 
-<!-- ================= CANVASES ================= -->
+    <script>
 
-<h3>Original Waves</h3>
-<canvas id="canvas1" width="1000" height="220"></canvas>
+        // ===== GET ELEMENTS =====
 
-<h3>Superposition and Envelope</h3>
-<canvas id="canvas2" width="1000" height="360"></canvas>
+        const A_slider = document.getElementById("A");
+        const k1_slider = document.getElementById("k1");
+        const k2_slider = document.getElementById("k2");
+        const w1_slider = document.getElementById("w1");
+        const w2_slider = document.getElementById("w2");
+        const speed_slider = document.getElementById("speed");
 
-<script>
+        const AVal = document.getElementById("AVal");
+        const k1Val = document.getElementById("k1Val");
+        const k2Val = document.getElementById("k2Val");
+        const w1Val = document.getElementById("w1Val");
+        const w2Val = document.getElementById("w2Val");
+        const speedVal = document.getElementById("speedVal");
 
-// ================== CONTEXT ==================
+        const canvas1 = document.getElementById("canvas1");
+        const ctx1 = canvas1.getContext("2d");
 
-const canvas1 = document.getElementById("canvas1");
-const ctx1 = canvas1.getContext("2d");
+        const canvas2 = document.getElementById("canvas2");
+        const ctx2 = canvas2.getContext("2d");
 
-const canvas2 = document.getElementById("canvas2");
-const ctx2 = canvas2.getContext("2d");
+        // ===== SCALE SETTINGS =====
 
-// ================== SCALE ==================
+        const originX = 60;
+        const scaleX = 50;
+        const scaleY = 60;
 
-const originX = 60;
-const scaleX = 50;
-const scaleY = 60;
+        // ===== DRAW AXES =====
 
-const baseDt = 0.002;
-// ================== DRAW GRID + AXES ==================
+        function drawAxes(ctx, canvas) {
 
-function drawAxes(ctx, canvas){
+            const showGrid = document.getElementById("gridToggle").checked;
 
-  const showGrid = document.getElementById("gridToggle").checked;
+            if (showGrid) {
+                ctx.strokeStyle = "#222";
+                ctx.lineWidth = 1;
 
-  if(showGrid){
-    ctx.strokeStyle = "#222";
-    ctx.lineWidth = 1;
+                for (let x = originX; x < canvas.width; x += scaleX) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
 
-    // vertical grid
-    for(let x=originX; x<canvas.width; x+=scaleX){
-      ctx.beginPath();
-      ctx.moveTo(x,0);
-      ctx.lineTo(x,canvas.height);
-      ctx.stroke();
-    }
+                for (let y = 0; y < canvas.height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+            }
 
-    // horizontal grid
-    for(let y=0; y<canvas.height; y+=40){
-      ctx.beginPath();
-      ctx.moveTo(0,y);
-      ctx.lineTo(canvas.width,y);
-      ctx.stroke();
-    }
-  }
+            // Axes
+            ctx.strokeStyle = "#00ffee";
+            ctx.lineWidth = 2;
 
-  // Axes
-  ctx.strokeStyle = "#00ffee";
-  ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
 
-  // x-axis
-  ctx.beginPath();
-  ctx.moveTo(0,canvas.height/2);
-  ctx.lineTo(canvas.width,canvas.height/2);
-  ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            ctx.stroke();
 
-  // y-axis
-  ctx.beginPath();
-  ctx.moveTo(originX,0);
-  ctx.lineTo(originX,canvas.height);
-  ctx.stroke();
+            // Labels
+            ctx.fillStyle = "#00ffee";
+            ctx.font = "14px Consolas";
 
-  // Axis labels
-  ctx.fillStyle = "#00ffee";
-  ctx.font = "14px Consolas";
+            ctx.fillText("x", canvas.width - 20, canvas.height / 2 - 8);
+            // ctx.fillText(legendtext, 5, 20);
 
-  ctx.fillText("x", canvas.width-20, canvas.height/2 - 8);
-  ctx.fillText("ψ(x,t)", 5, 20);
+            // Numeric ticks
+            for (let x = originX; x < canvas.width; x += scaleX) {
+                let value = ((x - originX) / scaleX).toFixed(0);
+                ctx.fillText(value, x - 5, canvas.height / 2 + 18);
+            }
+        }
 
-  // Numeric x-ticks
-  for(let x=originX; x<canvas.width; x+=scaleX){
-    let value = ((x-originX)/scaleX).toFixed(0);
-    ctx.fillText(value, x-5, canvas.height/2 + 18);
-  }
-}
+        // ===== DRAW CURVE =====
 
-// ================== DRAW FUNCTION ==================
+        function drawCurve(ctx, canvas, func, color, dashed = false) {
 
-function drawWave(ctx, canvas, func, color){
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+            if (dashed) ctx.setLineDash([6, 6]);
+            else ctx.setLineDash([]);
 
-  drawAxes(ctx,canvas);
+            for (let px = 0; px < canvas.width; px++) {
 
-  ctx.beginPath();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
+                let x = (px - originX) / scaleX;
+                let y = func(x);
 
-  for(let px=0; px<canvas.width; px++){
+                let py = canvas.height / 2 - y * scaleY;
 
-    let x = (px-originX)/scaleX;
-    let y = func(x);
+                if (px === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
 
-    let py = canvas.height/2 - y*scaleY;
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
 
-    if(px===0) ctx.moveTo(px,py);
-    else ctx.lineTo(px,py);
-  }
+        // ===== RESET =====
 
-  ctx.stroke();
-}
+        function resetSliders() {
+            A_slider.value = 1;
+            k1_slider.value = 20;
+            k2_slider.value = 21;
+            w1_slider.value = 100;
+            w2_slider.value = 105;
+            speed_slider.value = 1;
+        }
 
-// ================== RESET ==================
+        // ===== ANIMATION =====
 
-function resetSliders(){
-  A.value=1;
-  k1.value=20;
-  k2.value=21;
-  w1.value=100;
-  w2.value=105;
-  speed.value=1;
-}
+        let t = 0;
 
-// ================== ANIMATION ==================
+        function animate() {
 
-let t = 0;
+            const A = parseFloat(A_slider.value);
+            const k1 = parseFloat(k1_slider.value);
+            const k2 = parseFloat(k2_slider.value);
+            const w1 = parseFloat(w1_slider.value);
+            const w2 = parseFloat(w2_slider.value);
+            const speed = parseFloat(speed_slider.value);
 
-function animate(){
+            AVal.textContent = A.toFixed(1);
+            k1Val.textContent = k1.toFixed(1);
+            k2Val.textContent = k2.toFixed(1);
+            w1Val.textContent = w1.toFixed(0);
+            w2Val.textContent = w2.toFixed(0);
+            speedVal.textContent = speed.toFixed(1);
 
-  const A = parseFloat(document.getElementById("A").value);
-  const k1 = parseFloat(document.getElementById("k1").value);
-  const k2 = parseFloat(document.getElementById("k2").value);
-  const w1 = parseFloat(document.getElementById("w1").value);
-  const w2 = parseFloat(document.getElementById("w2").value);
-  const speed = parseFloat(document.getElementById("speed").value);
+            t += 0.002 * speed;
 
-  // Update values
-  AVal.textContent = A.toFixed(1);
-  k1Val.textContent = k1.toFixed(1);
-  k2Val.textContent = k2.toFixed(1);
-  w1Val.textContent = w1.toFixed(0);
-  w2Val.textContent = w2.toFixed(0);
-  speedVal.textContent = speed.toFixed(1);
+            // ===== CANVAS 1 =====
+            ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+            drawAxes(ctx1, canvas1,"ϕ₁ & ϕ₂");
 
-  let dk = k2-k1;
-  let dw = w2-w1;
+            drawCurve(ctx1, canvas1,
+                x => A * Math.cos(k1 * x - w1 * t),
+                "#39ff14"
+            );
 
-  let vp = wAvg/kAvg;
-  let vg = Math.abs(dk)>0.0001 ? dw/dk : 0;
+            drawCurve(ctx1, canvas1,
+                x => A * Math.cos(k2 * x - w2 * t),
+                "#ff00ff"
+            );
 
-  t += 0.002 * speed;
+            // ===== CANVAS 2 =====
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            drawAxes(ctx2, canvas2,"ϕ");
 
-  // Individual waves
-  drawWave(ctx1,canvas1,
-    x => A*Math.cos(k1*x - w1*t),
-    "#39ff14"
-  );
+            drawCurve(ctx2, canvas2,
+                x => A * Math.cos(k1 * x - w1 * t) +
+                    A * Math.cos(k2 * x - w2 * t),
+                "white"
+            );
 
-  drawWave(ctx1,canvas1,
-    x => A*Math.cos(k2*x - w2*t),
-    "#ff00ff"
-  );
+            const dk = k1 - k2;
+            const dw = w1 - w2;
 
-  // Superposition
-  drawWave(ctx2,canvas2,
-    x => A*Math.cos(k1*x - w1*t) +
-         A*Math.cos(k2*x - w2*t),
-    "white"
-  );
+            drawCurve(ctx2, canvas2,
+                x => 2 * A * Math.cos(0.5 * (dk * x - dw * t)),
+                "#ff4444",
+                true
+            );
 
-  // Enveloppe
-  drawWave(ctx2,canvas2,
-    x=>2*A*Math.cos(0.5*(dk*x-dw*t)),
-    "#ff4444",70);
+            drawCurve(ctx2, canvas2,
+                x => -2 * A * Math.cos(0.5 * (dk * x - dw * t)),
+                "#ff4444",
+                true
+            );
 
-  drawWave(ctx2,canvas2,
-    x=>-2*A*Math.cos(0.5*(dk*x-dw*t)),
-    "#ff4444",70);
+            requestAnimationFrame(animate);
+        }
 
-  requestAnimationFrame(animate);
-}
+        animate();
 
-animate();
-
-</script>
+    </script>
 </body>
+
 </html>
-
-
-
-
-
-
